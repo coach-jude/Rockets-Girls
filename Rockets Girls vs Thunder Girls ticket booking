@@ -1,55 +1,152 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Rockets vs Thunder | Ticket Booking</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Rockets vs Thunder - Ticket Booking</title>
   <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
-</head>
-<body class="bg-gradient-to-br from-red-600 to-orange-500 min-h-screen text-white font-sans">
+  <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+  <script>
+    async function showConfirmation(event) {
+      event.preventDefault();
 
-  <!-- Header -->
-  <header class="text-center py-6">
-    <h1 class="text-4xl font-extrabold">🚀 Rockets Girls vs ⚡ Thunder Girls</h1>
-    <p class="text-lg mt-2">25 June 2025 • 3:30 PM • Oklahoma City Girls Stadium</p>
+      const name = document.getElementById('name').value;
+      const email = document.getElementById('email').value;
+      const tickets = document.getElementById('tickets').value;
+      const section = document.getElementById('section').value;
+      const card = document.getElementById('card').value;
+      const cvv = document.getElementById('cvv').value;
+      const expiry = document.getElementById('expiry').value;
+      const seat = document.getElementById('seat').value;
+
+      if(name && email && tickets && section && card && cvv && expiry && seat) {
+        try {
+          await axios.post('https://example.com/api/bookings', {
+            name, email, tickets, section, seat, card, cvv, expiry
+          });
+
+          alert(`Booking confirmed for ${name}!\n${tickets} ticket(s) in ${section}, Seat: ${seat}\nA confirmation email and QR ticket will be sent to ${email}`);
+        } catch (error) {
+          alert('Booking failed. Please try again.');
+        }
+      } else {
+        alert('Please fill in all fields.');
+      }
+    }
+
+    function startCountdown() {
+      const eventDate = new Date('2025-06-25T15:30:00');
+      const countdownElement = document.getElementById('countdown');
+
+      function updateCountdown() {
+        const now = new Date();
+        const diff = eventDate - now;
+
+        if (diff <= 0) {
+          countdownElement.innerText = "The match has started!";
+          return;
+        }
+
+        const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+        const hours = Math.floor((diff / (1000 * 60 * 60)) % 24);
+        const minutes = Math.floor((diff / 1000 / 60) % 60);
+        const seconds = Math.floor((diff / 1000) % 60);
+
+        countdownElement.innerText = `${days}d ${hours}h ${minutes}m ${seconds}s left!`;
+      }
+
+      updateCountdown();
+      setInterval(updateCountdown, 1000);
+    }
+
+    window.onload = startCountdown;
+  </script>
+</head>
+<body class="bg-gradient-to-br from-red-600 to-orange-500 text-white font-sans">
+
+  <header class="text-center py-10 bg-opacity-90">
+    <h1 class="text-5xl font-extrabold tracking-wide">🚀 Rockets Girls vs ⚡ Thunder Girls</h1>
+    <p class="text-lg mt-3">25 June 2025 • 3:30 PM • Oklahoma City Girls Stadium</p>
+    <p class="text-sm mt-1 italic">Stadium Capacity: 5,000 seats</p>
+    <p id="countdown" class="mt-4 text-2xl font-bold"></p>
   </header>
 
-  <!-- Booking Card -->
-  <main class="max-w-xl mx-auto bg-white text-gray-900 rounded-2xl shadow-2xl p-8">
-    <h2 class="text-2xl font-bold text-center mb-4">Book Your Tickets Now</h2>
+  <section class="text-center mt-10">
+    <img src="/images/rockets_logo.png" alt="Rockets Logo" class="mx-auto w-32 mb-4">
+    <h2 class="text-3xl font-semibold mb-2">Get Ready for the Ultimate Showdown!</h2>
+    <p class="max-w-xl mx-auto text-lg">Two powerhouses collide in a thrilling 15-minute match that promises nonstop action, skill, and heart. Be there to witness the future of girls' basketball.</p>
+  </section>
 
-    <form class="space-y-4">
-      <div>
-        <label class="block font-semibold mb-1">Full Name</label>
-        <input type="text" placeholder="Jane Doe" class="w-full px-4 py-2 border rounded-md">
+  <section class="max-w-2xl mx-auto bg-white text-gray-900 rounded-xl shadow-2xl mt-12 p-8">
+    <h3 class="text-2xl font-bold text-center mb-6">🎟️ Book Your Tickets Now</h3>
+    <form onsubmit="showConfirmation(event)">
+      <div class="grid grid-cols-1 gap-4">
+        <div>
+          <label class="font-semibold">Full Name</label>
+          <input type="text" id="name" class="w-full p-2 border rounded-md" placeholder="Jane Doe" required>
+        </div>
+        <div>
+          <label class="font-semibold">Email Address</label>
+          <input type="email" id="email" class="w-full p-2 border rounded-md" placeholder="you@example.com" required>
+        </div>
+        <div>
+          <label class="font-semibold">Number of Tickets</label>
+          <input type="number" id="tickets" min="1" max="10" class="w-full p-2 border rounded-md" required>
+        </div>
+        <div>
+          <label class="font-semibold">Select Section</label>
+          <select id="section" class="w-full p-2 border rounded-md">
+            <option value="General Admission">General Admission - $10</option>
+            <option value="Courtside">Courtside - $25</option>
+            <option value="VIP Box">VIP Box - $50</option>
+          </select>
+        </div>
+        <div>
+          <label class="font-semibold">Select Seat</label>
+          <input type="text" id="seat" class="w-full p-2 border rounded-md" placeholder="e.g. A12" required>
+        </div>
+
+        <div class="mt-6 border-t pt-4">
+          <h4 class="text-xl font-bold mb-2">💳 Payment Details</h4>
+          <div>
+            <label class="font-semibold">Card Number</label>
+            <input type="text" id="card" class="w-full p-2 border rounded-md" placeholder="1234 5678 9012 3456" required>
+          </div>
+          <div class="grid grid-cols-2 gap-4 mt-2">
+            <div>
+              <label class="font-semibold">Expiry Date</label>
+              <input type="text" id="expiry" class="w-full p-2 border rounded-md" placeholder="MM/YY" required>
+            </div>
+            <div>
+              <label class="font-semibold">CVV</label>
+              <input type="text" id="cvv" class="w-full p-2 border rounded-md" placeholder="123" required>
+            </div>
+          </div>
+        </div>
+
+        <button type="submit" class="mt-6 bg-red-600 hover:bg-red-700 text-white py-3 rounded-md font-bold text-lg">Confirm Booking</button>
       </div>
-
-      <div>
-        <label class="block font-semibold mb-1">Email Address</label>
-        <input type="email" placeholder="you@example.com" class="w-full px-4 py-2 border rounded-md">
-      </div>
-
-      <div>
-        <label class="block font-semibold mb-1">Number of Tickets</label>
-        <input type="number" min="1" max="10" class="w-full px-4 py-2 border rounded-md">
-      </div>
-
-      <div>
-        <label class="block font-semibold mb-1">Seating Preference</label>
-        <select class="w-full px-4 py-2 border rounded-md">
-          <option>General Admission - $10</option>
-          <option>Courtside - $25</option>
-          <option>VIP Box - $50</option>
-        </select>
-      </div>
-
-      <button type="submit" class="w-full bg-red-600 hover:bg-red-700 text-white font-bold py-3 rounded-md">Confirm Booking</button>
     </form>
-  </main>
+  </section>
 
-  <!-- Footer -->
-  <footer class="text-center mt-8 text-sm opacity-80">
-    © 2025 Rockets Girls Basketball • Site by ynbag.com
+  <section class="max-w-4xl mx-auto mt-16 text-center">
+    <h3 class="text-2xl font-bold mb-4">🏟️ Seating Map</h3>
+    <img src="/images/seating_chart.png" alt="Seating Chart" class="mx-auto rounded shadow-md">
+    <p class="mt-2 text-sm text-white">Note: VIP and Courtside seats are limited. Book early to secure the best view!</p>
+  </section>
+
+  <section class="max-w-3xl mx-auto mt-16 bg-white text-gray-900 rounded-xl shadow-lg p-6">
+    <h3 class="text-2xl font-bold mb-4 text-center">📊 Past Encounters</h3>
+    <ul class="space-y-2">
+      <li>🏀 <strong>May 2024:</strong> Rockets Girls 28 - 24 Thunder Girls</li>
+      <li>🏀 <strong>Nov 2024:</strong> Thunder Girls 32 - 30 Rockets Girls</li>
+      <li>🏀 <strong>Feb 2025:</strong> Rockets Girls 34 - 29 Thunder Girls</li>
+    </ul>
+  </section>
+
+  <footer class="text-center mt-20 py-8 bg-black bg-opacity-50 text-white text-sm">
+    <p>&copy; 2025 Rockets Girls Basketball | Built by ynbag.com</p>
+    <p>For support, contact <a href="mailto:help@ynbag.com" class="underline">help@ynbag.com</a></p>
   </footer>
 
 </body>
